@@ -1,15 +1,13 @@
 ---
-
-## title: "Reproducible Research: Peer Assessment 1"
-
-#  A New Document
+## title: "Reproducible Research: Peer Assessment 1" x
+---
 
 ### Loading and preprocessing the data
 	### removing NAs 
 	### coerce dates to date class; extract weekday from date object
 
-```{r}
 
+```r
 library(ggplot2)
 peer1 <- read.csv("activity.csv")
 peer1 <- na.omit(peer1)
@@ -17,29 +15,62 @@ peer1$date <- as.Date(peer1$date)
 peer1$date <- weekdays(peer1$date)
 
 echo=TRUE
-
 ```
 
 ### HISTOGRAM & REPORING OF STEP TOTALS & MEAN PER DAY
 ### Calculation and Reporting of the Mean & Median total number of steps taken per day.
 
-```{r}
 
+```r
 peer1$date <- as.factor(peer1$date)
 Sumsteps <- aggregate(peer1$steps, list(peer1$date), sum)
 colnames(Sumsteps) <- c("Day", "TotalSteps")
 histo <- ggplot(Sumsteps, aes(x=Sumsteps$Day, y=Sumsteps$TotalSteps)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 100000) + xlab("Weekday") + ylab("Number of Steps") + labs(title="TOTAL STEPS TAKEN PER DAY")
 histo
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+
+```r
 Sumsteps
+```
+
+```
+##         Day TotalSteps
+## 1    Friday      86518
+## 2    Monday      69824
+## 3  Saturday      87748
+## 4    Sunday      85944
+## 5  Thursday      65702
+## 6   Tuesday      80546
+## 7 Wednesday      94326
+```
+
+```r
 echo=TRUE
 ```
 
-```{r}
+
+```r
 peer1$date <- as.factor(peer1$date)
 mediansteps <- aggregate(peer1$steps, list(peer1$date), median)
 colnames(mediansteps) <- c("Day", "MedianSteps")
 
 mediansteps
+```
+
+```
+##         Day MedianSteps
+## 1    Friday           0
+## 2    Monday           0
+## 3  Saturday           0
+## 4    Sunday           0
+## 5  Thursday           0
+## 6   Tuesday           0
+## 7 Wednesday           0
+```
+
+```r
 echo=TRUE
 ```
 
@@ -48,8 +79,8 @@ echo=TRUE
 - mean by interval aggregated
 - overall max & mean step calculated
 
-```{r}
 
+```r
 peer1$interval <- as.factor(peer1$interval)
 MeanInt <- aggregate(peer1$steps, list(peer1$interval), mean)
 colnames(MeanInt) <- c("Interval", "MeanbyInterval")
@@ -59,13 +90,44 @@ x <- as.numeric(levels(x)[x])
 y <- round(MeanInt$MeanbyInterval)
 g <- ggplot(MeanInt, aes(x, y)) + geom_line(colour="red") + xlab("Time Intervals") + ylab("Average Number of Steps")+ xlab("5-Minute Intervals") + labs(title="AVERAGE STEPS TAKEN PER TIME INTERVAL")
 g
+```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+
+```r
 max(y)  ####   206 -- max steps in an interval
+```
+
+```
+## [1] 206
+```
+
+```r
 mean(y) ####   37.3826 -- mean steps in an interval
+```
+
+```
+## [1] 37.37
+```
+
+```r
 		####   mean will be used to imputed missing data
 match(c(206), y) #### 104 index/interval location of max steps
-x[104]  ####  835 i.e, 8:35 is with max steps
+```
 
+```
+## [1] 104
+```
+
+```r
+x[104]  ####  835 i.e, 8:35 is with max steps
+```
+
+```
+## [1] 835
+```
+
+```r
 echo=TRUE
 ```
 
@@ -79,10 +141,17 @@ echo=TRUE
 -	histogram created with mean having imputed missing data
 -   imputing missing data with substitute causes broad rise of step level numbers
 
-```{r}
 
+```r
 pe2 <- read.csv("activity.csv")
 mean(y) #  mean from abour: 37.3826; used to imputed missing data
+```
+
+```
+## [1] 37.37
+```
+
+```r
 pe2[is.na(pe2)] <- 37.8326
 
 pe2$date <- as.Date(pe2$date)
@@ -94,18 +163,53 @@ colnames(Sums) <- c("Day", "Steps")
 histo <- ggplot(Sumsteps, aes(x=Sumsteps$Day, y=Sumsteps$TotalSteps)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 100000) + xlab("Weekday") + ylab("Number of Steps") + labs(title="TOTAL STEPS TAKEN PER DAY")
 
 histo
+```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+
+```r
 Sums
+```
 
+```
+##         Day  Steps
+## 1    Friday 108310
+## 2    Monday  91616
+## 3  Saturday  98644
+## 4    Sunday  96840
+## 5  Thursday  76598
+## 6   Tuesday  80546
+## 7 Wednesday 105222
+```
+
+```r
 max(y)  ####   206 -- max steps in an interval
+```
+
+```
+## [1] 206
+```
+
+```r
 		###   mean was used to impute missing data
 
 match(c(206), y) #### 104 index/interval location of max steps
+```
 
+```
+## [1] 104
+```
+
+```r
 x[104]  ####  835 i.e, 8:35 is with max steps
+```
 
+```
+## [1] 835
+```
+
+```r
 echo=TRUE
-
 ```
 
 ### WEEKDAYS vs WEEKENDS -- AVERAGE STEPS TAKEN
@@ -115,8 +219,8 @@ echo=TRUE
 - created a new dataframe
 - create panel plot
 
-```{r}
 
+```r
 peer3 <- read.csv("activity.csv")
 peer3 <- na.omit(peer3)
 peer3$date <- as.Date(peer3$date)
@@ -143,9 +247,12 @@ aggF <- data.frame(x, y, day)
 g <- ggplot(aggF, aes(x, y, colour=day)) + geom_line() + facet_wrap( ~ day, nrow=2) + xlab("Time Intervals") + ylab("Average Steps Taken") + labs(title="Average Steps Taken\n(Weekday vs Weekend)")
 
 g
+```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+
+```r
 echo=TRUE
-
 ```
 
 
