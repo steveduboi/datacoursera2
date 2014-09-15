@@ -18,8 +18,8 @@ echo=TRUE
 
 ```
 
-### HISTOGRAM & REPORING OF STEP TOTALS PER DAY
-### Calculation and Reporting of the Mean and Median of total number of steps taken per day.
+### HISTOGRAM & REPORING OF STEP TOTALS & MEAN PER DAY
+### Calculation and Reporting of the Mean & Median total number of steps taken per day.
 
 ```{r}
 
@@ -32,20 +32,12 @@ Sumsteps
 echo=TRUE
 ```
 
-### CALCULATION & REPORING OF MEAN & MEDIAN OF STEP TOTALS PER DAY
-- Meansteps = Mean
-- Mediansteps = Median
-
 ```{r}
+peer1$date <- as.factor(peer1$date)
+mediansteps <- aggregate(peer1$steps, list(peer1$date), median)
+colnames(mediansteps) <- c("Day", "MedianSteps")
 
-Meansteps <- aggregate(peer1$steps, list(peer1$date), mean)
-colnames(Meansteps) <- c("Day", "   Mean Steps")
-Meansteps
-
-Mediansteps <- aggregate(peer1$steps, list(peer1$date), median)
-colnames(Mediansteps) <- c("Day", "   Median Steps/Day")
-Mediansteps
-
+mediansteps
 echo=TRUE
 ```
 
