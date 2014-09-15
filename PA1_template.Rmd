@@ -1,0 +1,157 @@
+---
+## title: "Reproducible Research: Peer Assessment 1" x
+---
+
+### Loading and preprocessing the data
+	### removing NAs 
+	### coerce dates to date class; extract weekday from date object
+
+```{r}
+
+library(ggplot2)
+peer1 <- read.csv("activity.csv")
+peer1 <- na.omit(peer1)
+peer1$date <- as.Date(peer1$date)
+peer1$date <- weekdays(peer1$date)
+
+echo=TRUE
+
+```
+
+### HISTOGRAM & REPORING OF STEP TOTALS PER DAY
+### Calculation and Reporting of the Mean and Median of total number of steps taken per day.
+
+```{r}
+
+peer1$date <- as.factor(peer1$date)
+Sumsteps <- aggregate(peer1$steps, list(peer1$date), sum)
+colnames(Sumsteps) <- c("Day", "TotalSteps")
+histo <- ggplot(Sumsteps, aes(x=Sumsteps$Day, y=Sumsteps$TotalSteps)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 100000) + xlab("Weekday") + ylab("Number of Steps") + labs(title="TOTAL STEPS TAKEN PER DAY")
+histo
+Sumsteps
+echo=TRUE
+```
+
+### CALCULATION & REPORING OF MEAN & MEDIAN OF STEP TOTALS PER DAY
+- Meansteps = Mean
+- Mediansteps = Median
+
+```{r}
+
+Meansteps <- aggregate(peer1$steps, list(peer1$date), mean)
+colnames(Meansteps) <- c("Day", "   Mean Steps")
+Meansteps
+
+Mediansteps <- aggregate(peer1$steps, list(peer1$date), median)
+colnames(Mediansteps) <- c("Day", "   Median Steps/Day")
+Mediansteps
+
+echo=TRUE
+```
+
+###  TIME SERIES PLOT OF AVERAGE STEPS PER 5 MINUTE TIME INTERVAL
+- average daily activity pattern
+- mean by interval aggregated
+- overall max & mean step calculated
+
+```{r}
+
+peer1$interval <- as.factor(peer1$interval)
+MeanInt <- aggregate(peer1$steps, list(peer1$interval), mean)
+colnames(MeanInt) <- c("Interval", "MeanbyInterval")
+
+x <- factor(MeanInt$Interval)
+x <- as.numeric(levels(x)[x])
+y <- round(MeanInt$MeanbyInterval)
+g <- ggplot(MeanInt, aes(x, y)) + geom_line(colour="red") + xlab("Time Intervals") + ylab("Average Number of Steps")+ xlab("5-Minute Intervals") + labs(title="AVERAGE STEPS TAKEN PER TIME INTERVAL")
+g
+
+max(y)  ####   206 -- max steps in an interval
+mean(y) ####   37.3826 -- mean steps in an interval
+		####   mean will be used to imputed missing data
+match(c(206), y) #### 104 index/interval location of max steps
+x[104]  ####  835 i.e, 8:35 is with max steps
+
+echo=TRUE
+```
+
+### Imputing missing values1
+#### methodology 
+-  	mean will be used to imputed missing data
+-  	mean(y): 37.3826 -- mean steps in an interval
+-	max(y):	206 -- max steps in an interval
+-   match(c(206), y):  104 index/interval location of max steps
+-   x[104]:  835 (i.e, 8:35) is interval with max steps
+-	histogram created with mean having imputed missing data
+-   imputing missing data with substitute causes broad rise of step level numbers
+
+```{r}
+
+pe2 <- read.csv("activity.csv")
+mean(y) #  mean from abour: 37.3826; used to imputed missing data
+pe2[is.na(pe2)] <- 37.8326
+
+pe2$date <- as.Date(pe2$date)
+pe2$date <- weekdays(pe2$date)
+
+pe2$date <- as.factor(pe2$date)
+Sums <- aggregate(pe2$steps, list(pe2$date), sum)
+colnames(Sums) <- c("Day", "Steps")
+histo <- ggplot(Sumsteps, aes(x=Sumsteps$Day, y=Sumsteps$TotalSteps)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 100000) + xlab("Weekday") + ylab("Number of Steps") + labs(title="TOTAL STEPS TAKEN PER DAY")
+
+histo
+
+Sums
+
+max(y)  ####   206 -- max steps in an interval
+		###   mean was used to impute missing data
+
+match(c(206), y) #### 104 index/interval location of max steps
+
+x[104]  ####  835 i.e, 8:35 is with max steps
+
+echo=TRUE
+
+```
+
+### WEEKDAYS vs WEEKENDS -- AVERAGE STEPS TAKEN
+- NAS Removed
+- coerce to date class
+- extract weekday & weekens names
+- created a new dataframe
+- create panel plot
+
+```{r}
+
+peer3 <- read.csv("activity.csv")
+peer3 <- na.omit(peer3)
+peer3$date <- as.Date(peer3$date)
+peer3$date <- weekdays(peer3$date)
+peer3$date <- gsub("Monday", "Weekday", peer3$date)
+peer3$date <- gsub("Tuesday", "Weekday", peer3$date)
+peer3$date <- gsub("Wednesday", "Weekday", peer3$date)
+peer3$date <- gsub("Thursday", "Weekday", peer3$date)
+peer3$date <- gsub("Friday", "Weekday", peer3$date)
+peer3$date <- gsub("Saturday", "Weekend", peer3$date)
+peer3$date <- gsub("Sunday", "Weekend", peer3$date)
+ 
+peer3$date <- as.factor(peer3$date)
+aggF <- aggregate(peer3$steps, by = list(peer3$interval, peer3$date), mean)
+colnames(aggF) <- c("Interval", "DayType", "Steps")
+
+x <- x <- aggF[,1]
+day <- as.factor(aggF[,2])
+day <- as.character(day)
+y <- aggF$Steps
+
+aggF <- data.frame(x, y, day)
+
+g <- ggplot(aggF, aes(x, y, colour=day)) + geom_line() + facet_wrap( ~ day, nrow=2) + xlab("Time Intervals") + ylab("Average Steps Taken") + labs(title="Average Steps Taken\n(Weekday vs Weekend)")
+
+g
+
+echo=TRUE
+
+```
+
+
