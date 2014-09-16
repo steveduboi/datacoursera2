@@ -1,6 +1,8 @@
 ---
-## title: "Reproducible Research: Peer Assessment 1" x
----
+
+## title: "Reproducible Research: Peer Assessment 1"
+
+#  A New Document
 
 ### Loading and preprocessing the data
 	### removing NAs 
@@ -144,23 +146,42 @@ echo=TRUE
 
 ```r
 pe2 <- read.csv("activity.csv")
-mean(y) #  mean from abour: 37.3826; used to imputed missing data
-```
-
-```
-## [1] 37.37
-```
-
-```r
+#  mean from about: 37.3826; used to imputed missing data
 pe2[is.na(pe2)] <- 37.8326
 
 pe2$date <- as.Date(pe2$date)
 pe2$date <- weekdays(pe2$date)
 
-pe2$date <- as.factor(pe2$date)
-Sums <- aggregate(pe2$steps, list(pe2$date), sum)
-colnames(Sums) <- c("Day", "Steps")
-histo <- ggplot(Sumsteps, aes(x=Sumsteps$Day, y=Sumsteps$TotalSteps)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 100000) + xlab("Weekday") + ylab("Number of Steps") + labs(title="TOTAL STEPS TAKEN PER DAY")
+pe2$date <- as.character(pe2$date)
+Means <- aggregate(pe2$steps, list(pe2$date), mean)
+colnames(Means)
+```
+
+```
+## [1] "Group.1" "x"
+```
+
+```r
+Means
+```
+
+```
+##     Group.1     x
+## 1    Friday 41.79
+## 2    Monday 35.35
+## 3  Saturday 42.81
+## 4    Sunday 42.03
+## 5  Thursday 29.55
+## 6   Tuesday 31.07
+## 7 Wednesday 40.59
+```
+
+```r
+x=Means$Group.1 
+y=Means$x
+Means <- data.frame(x, y)
+
+histo <- ggplot(Means, aes(x, y)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 50) + xlab("Weekday") + ylab("Number of Steps") + labs(title="AVG STEPS TAKEN PER DAY with imputed value added")
 
 histo
 ```
@@ -168,36 +189,27 @@ histo
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 ```r
-Sums
-```
-
-```
-##         Day  Steps
-## 1    Friday 108310
-## 2    Monday  91616
-## 3  Saturday  98644
-## 4    Sunday  96840
-## 5  Thursday  76598
-## 6   Tuesday  80546
-## 7 Wednesday 105222
-```
-
-```r
 max(y)  ####   206 -- max steps in an interval
 ```
 
 ```
-## [1] 206
+## [1] 42.81
 ```
 
 ```r
-		###   mean was used to impute missing data
+mean(y)  ###   mean was used to impute missing data
+```
 
+```
+## [1] 37.6
+```
+
+```r
 match(c(206), y) #### 104 index/interval location of max steps
 ```
 
 ```
-## [1] 104
+## [1] NA
 ```
 
 ```r
@@ -205,7 +217,7 @@ x[104]  ####  835 i.e, 8:35 is with max steps
 ```
 
 ```
-## [1] 835
+## [1] NA
 ```
 
 ```r
