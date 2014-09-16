@@ -82,24 +82,27 @@ echo=TRUE
 ```{r}
 
 pe2 <- read.csv("activity.csv")
-mean(y) #  mean from abour: 37.3826; used to imputed missing data
+#  mean from about: 37.3826; used to imputed missing data
 pe2[is.na(pe2)] <- 37.8326
 
 pe2$date <- as.Date(pe2$date)
 pe2$date <- weekdays(pe2$date)
 
-pe2$date <- as.factor(pe2$date)
-Sums <- aggregate(pe2$steps, list(pe2$date), sum)
-colnames(Sums) <- c("Day", "Steps")
-histo <- ggplot(Sumsteps, aes(x=Sumsteps$Day, y=Sumsteps$TotalSteps)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 100000) + xlab("Weekday") + ylab("Number of Steps") + labs(title="TOTAL STEPS TAKEN PER DAY")
+pe2$date <- as.character(pe2$date)
+Means <- aggregate(pe2$steps, list(pe2$date), mean)
+colnames(Means)
+Means
+x=Means$Group.1 
+y=Means$x
+Means <- data.frame(x, y)
+
+histo <- ggplot(Means, aes(x, y)) + geom_histogram(stat="identity", binwidth = 0.5, color="black", fill="yellow") +  ylim(0, 50) + xlab("Weekday") + ylab("Number of Steps") + labs(title="AVG STEPS TAKEN PER DAY with imputed value added")
 
 histo
 
-Sums
-
 max(y)  ####   206 -- max steps in an interval
-		###   mean was used to impute missing data
-
+	
+mean(y)  ###   mean was used to impute missing data
 match(c(206), y) #### 104 index/interval location of max steps
 
 x[104]  ####  835 i.e, 8:35 is with max steps
